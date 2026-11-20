@@ -1,0 +1,150 @@
+import random
+
+# ==============================================================================
+# Project: Hangman Word Guessing Game (Console-Based)
+# Description: A beginner-friendly terminal game using basic programming concepts.
+# ==============================================================================
+
+# List of secret words (at least 15 words)
+WORDS = [
+    "APPLE", "BANANA", "ORANGE", "PYTHON", "CODING",
+    "LAPTOP", "COMPUTER", "GIRAFFE", "ELEPHANT", "PLANET",
+    "GUITAR", "RAINBOW", "DIAMOND", "PUZZLE", "FLOWER",
+    "MONKEY", "CASTLE", "DOLPHIN", "BICYCLE", "SUNSHINE"
+]
+
+
+def display_word_status(secret_word, guessed_letters):
+    """
+    Builds the display string for the secret word.
+    Reveals letters that have been guessed, and leaves underscores for hidden letters.
+    """
+    displayed = []
+    for letter in secret_word:
+        if letter in guessed_letters:
+            displayed.append(letter)
+        else:
+            displayed.append("_")
+    return " ".join(displayed)
+
+
+def play_game(player_name):
+    """
+    Runs a single round of the Hangman game.
+    """
+    # 1. Random Word Selection
+    secret_word = random.choice(WORDS)
+    
+    # 2. Tracking Variables
+    max_attempts = 6
+    remaining_attempts = max_attempts
+    guessed_letters = []  # List to store all guessed letters
+
+    print("\n--------------------------------")
+    print(f"Good luck, {player_name}! Let's start.")
+    print("--------------------------------")
+
+    # 3. Main Game Loop (While Loop)
+    while remaining_attempts > 0:
+        # Display current word status
+        current_status = display_word_status(secret_word, guessed_letters)
+        print(f"\nSecret Word: {current_status}")
+        print(f"Remaining Attempts: {remaining_attempts}")
+        
+        # Display previously guessed letters
+        if len(guessed_letters) > 0:
+            print(f"Guessed Letters: {', '.join(guessed_letters)}")
+        else:
+            print("Guessed Letters: None")
+
+        # Prompt player for input
+        guess = input("Enter your guess: ").strip().upper()
+
+        # Input Validation: Must be a single alphabetic character
+        if len(guess) != 1 or not guess.isalpha():
+            print("Invalid input! Please enter a single letter (A-Z).")
+            continue
+
+        # Prevent duplicate guesses
+        if guess in guessed_letters:
+            print(f"You already guessed '{guess}'. Try a different letter!")
+            continue
+
+        # Add the guess to the list of guessed letters
+        guessed_letters.append(guess)
+
+        # Check if the guess is in the secret word (If-Else statement)
+        if guess in secret_word:
+            print(f"\nCorrect Guess! '{guess}' is in the secret word.")
+        else:
+            remaining_attempts -= 1
+            print(f"\nWrong Guess! '{guess}' is not in the secret word.")
+
+        # Check Win Condition: Have all letters in secret_word been guessed?
+        all_guessed = True
+        for letter in secret_word:
+            if letter not in guessed_letters:
+                all_guessed = False
+                break
+
+        if all_guessed:
+            print("\n================================")
+            print("   Congratulations! You Won!    ")
+            print("================================")
+            print(f"Well done, {player_name}! You guessed the word: {secret_word}")
+            return
+
+    # Loss Condition (Triggered when remaining_attempts reaches 0)
+    print("\n================================")
+    print("           GAME OVER            ")
+    print("================================")
+    print("Game Over! You Lost!")
+    print(f"The correct secret word was: {secret_word}")
+
+
+def main():
+    """
+    Main function to manage starting the game, showing instructions,
+    and handling the play-again loop.
+    """
+    # Game Header
+    print("================================")
+    print("         HANGMAN GAME           ")
+    print("================================")
+    print("\nWelcome to Hangman!")
+
+    # Ask the player for their name
+    player_name = input("\nEnter your name: ").strip()
+    if not player_name:
+        player_name = "Player"
+
+    # Display Instructions
+    print("\nInstructions:")
+    print("1. Guess the hidden word one letter at a time.")
+    print("2. You have 6 incorrect attempts.")
+    print("3. Every wrong guess reduces your attempts.")
+    print("4. Guess the complete word before running out of attempts.")
+
+    input("\nPress Enter when you are ready to start...")
+
+    # Loop to allow playing multiple rounds (Play Again feature)
+    while True:
+        play_game(player_name)
+
+        # Ask player if they want to play again
+        print("\n--------------------------------")
+        play_again = input("Do you want to play again? (yes/no): ").strip().lower()
+
+        while play_again not in ["yes", "y", "no", "n"]:
+            print("Please enter 'yes' or 'no'.")
+            play_again = input("Do you want to play again? (yes/no): ").strip().lower()
+
+        if play_again in ["no", "n"]:
+            print(f"\nThank you for playing Hangman, {player_name}! Goodbye!")
+            break
+
+
+# Run the game
+if __name__ == "__main__":
+    main()
+
